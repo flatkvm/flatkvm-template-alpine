@@ -1,0 +1,17 @@
+#!/sbin/openrc-run
+
+description="Prepares the system for flatkvm"
+
+start() {
+	FLATKVM_UID=$(sed -E 's/.*flatkvm_uid=([0-9]+)?.*/\1/' /proc/cmdline)
+
+	if [ -z "${FLATKVM_UID}" ]; then                                                                  
+	        FLATKVM_UID=500                                                                           
+	fi                                                                                                
+                                                                                                  
+	echo "flatkvm:x:${FLATKVM_UID}:${FLATKVM_UID}:Linux User,,,:/home/flatkvm:/bin/ash" >> /etc/passwd
+	echo "flatkvm:x:${FLATKVM_UID}:flatkvm" >> /etc/group
+ 
+	chown -R ${FLATKVM_UID}:${FLATKVM_UID} /home/flatkvm
+	chown ${FLATKVM_UID}:${FLATKVM_UID} /dev/vport*
+}
